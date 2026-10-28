@@ -137,6 +137,57 @@
       "fixture": null,
       "expected_decision": "allow",
       "reason": "Parser bug: -n and 5 are separate args, 5 is treated as file path — file '5' won't exist so allow"
+    },
+    {
+      "id": 18,
+      "name": "cat-with-cwd",
+      "input": { "cwd": "{{FIXTURES}}", "tool_input": { "command": "cat large.txt" } },
+      "fixture": null,
+      "expected_decision": "block",
+      "reason": "Relative path resolved against hook input cwd — should block"
+    },
+    {
+      "id": 19,
+      "name": "cat-input-redirect",
+      "input": { "tool_input": { "command": "cat < {{FIXTURES}}/large.txt" } },
+      "fixture": null,
+      "expected_decision": "block",
+      "reason": "Input redirection cat < file — should block"
+    },
+    {
+      "id": 20,
+      "name": "cat-input-redirect-nospace",
+      "input": { "tool_input": { "command": "cat <{{FIXTURES}}/large.txt" } },
+      "fixture": null,
+      "expected_decision": "block",
+      "reason": "Input redirection cat <file without space — should block"
+    },
+    {
+      "id": 21,
+      "name": "cat-env-var",
+      "input": { "tool_input": { "command": "cat $TEST_DIR/large.txt" } },
+      "env": { "TEST_DIR": "{{FIXTURES}}" },
+      "fixture": null,
+      "expected_decision": "block",
+      "reason": "Path with $VAR expansion — should block"
+    },
+    {
+      "id": 22,
+      "name": "cat-env-var-braces",
+      "input": { "tool_input": { "command": "cat ${TEST_DIR}/large.txt" } },
+      "env": { "TEST_DIR": "{{FIXTURES}}" },
+      "fixture": null,
+      "expected_decision": "block",
+      "reason": "Path with ${VAR} expansion — should block"
+    },
+    {
+      "id": 23,
+      "name": "cat-tilde-home",
+      "input": { "tool_input": { "command": "cat ~/large.txt" } },
+      "env": { "HOME": "{{FIXTURES}}" },
+      "fixture": null,
+      "expected_decision": "block",
+      "reason": "Path with ~ tilde expansion — should block"
     }
   ]
 }

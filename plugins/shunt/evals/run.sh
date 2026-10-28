@@ -53,7 +53,7 @@ setup_fixtures() {
     local input_path
     input_path=$(jq -r ".evals[$i].input.tool_input.file_path // empty" "$evals_file")
     if [ -z "$input_path" ]; then
-      input_path=$(jq -r ".evals[$i].input.tool_input.command // empty" "$evals_file" | sed -E 's/^(cat|head|tail|less|more) +(-[^ ]+ +)*//' | sed 's/ .*//' | tr -d '"'"'")
+      input_path=$(jq -r ".evals[$i].input.tool_input.command // empty" "$evals_file" | sed -E 's/^(cat|head|tail|less|more) +(-[^ ]+ +)*//' | sed -E 's/^< *//' | sed 's/ .*//' | tr -d '"'"'")
     fi
     input_path=$(echo "$input_path" | sed "s|{{FIXTURES}}|$FIXTURES|")
 
@@ -113,6 +113,7 @@ run_suite() {
 
     local env_json
     env_json=$(jq -r ".evals[$i].env // empty" "$evals_file")
+    [ -n "$env_json" ] && env_json=$(echo "$env_json" | sed "s|{{FIXTURES}}|$FIXTURES|g")
     run_eval "$hook" "$name" "$input" "$expected" "$reason" "$env_json"
   done
 
